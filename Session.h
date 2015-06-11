@@ -20,9 +20,12 @@ private:
   bool complete;
   int end;
   struct tm * now;
+  string interval;
+  
  public:
   Session();
-
+  ~Session();
+  string getDurationString();
   long getBegin();
   long getTerm();
   void setTerm(time_t term);

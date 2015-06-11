@@ -7,7 +7,21 @@ long duration;
 bool complete;
 int end;
 struct tm * now;
-  
+string interval;
+
+string Session::getDurationString() {
+  long duration, sessionhrs,sessionmin, sessionsec;
+
+  duration = this->getDuration();
+  sessionhrs = (int) this->getDuration() / (60*60);
+  duration -= sessionhrs*60*60;
+  sessionmin = (int) duration / 60;
+  duration -= sessionmin*60;
+  sessionsec = (int) duration;
+  string s = to_string(sessionhrs) + " hours " + to_string(sessionmin) + " min " + to_string(sessionsec) + " sec";
+  return s;
+}
+
 time_t Session::getBegin() {
   return this->begin;
 }
@@ -33,7 +47,8 @@ long Session::getDuration() {
 string Session::getDate() {
   
   string s;
-  s.append(to_string(this->now->tm_year + 1900)).append(" ").append(to_string(this->now->tm_mon).append(" ").append(to_string(this->now->tm_mday)));
+  s.append(to_string(this->now->tm_year + 1900)).append("-").append(to_string(this->now->tm_mon).append("-").append(to_string(this->now->tm_mday)));
+  s = to_string(this->now->tm_mon) + "-" + to_string(this->now->tm_mday) + "-" + to_string(this->now->tm_year + 1900);
   return s;
 }
 	
@@ -54,4 +69,8 @@ Session::Session() {
   this->begin = time(0);
   this->now = localtime( & this->begin );
   complete = false;
+}
+
+Session::~Session() {
+  //delete now;
 }
