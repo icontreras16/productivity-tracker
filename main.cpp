@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "Interval.h"
+#include "Day.h"
 #include <vector>
 #include <ctime>
 
@@ -17,10 +18,10 @@ int main() {
   vector<Interval> intervals;
   string input = "";
   Interval* newsesh;
+  Day* newday;
   string filepath, line;
   ifstream infile;
   ofstream outfile;
-  int num;
   DIR *dp;
   struct dirent *dirp;
   
@@ -28,6 +29,53 @@ int main() {
     cout << "Enter Command >> " << flush;
     getline(cin, input);
 
+    //record factors for current day that affect sleep
+    if (input == "record") {
+      while (true) {
+	if (newday == NULL) {
+	  newday = new Day();
+	  cout << "New day being recorded" << endl;
+	}
+	cout << "Enter sleep arguments (h for help)>> " << flush;
+	getline(cin, input);
+
+	// handle list of arguments provided
+	if (input == "h") {
+	  cout << "All possible argument parameters:\n" << endl;
+	  cout << "-w if you worked out" << endl;
+	  cout << "-d if you drank alcohol" << endl;
+	  cout << "-s if you were exposed to a display screen tonight" << endl;
+	  cout << "-a if you ate at a late hour" << endl;
+	  cout << "-c if you had caffeine" << endl;
+	  cout << "q to quit" << endl;
+	}
+	if (input == "q") {break;}
+	//this allows multiple arguments to be provided at once
+	if (input.find("-w") != string::npos) {
+	  *newday->setWorkout(true);
+	}
+	if (input.find("-d") != string::npos) {
+	  *newday->setAlcohol(true);
+	}
+	if (input.find("-s") != string::npos) {
+	  *newday->setScreened(true);
+	}
+	if (input.find("-a") != string::npos) {
+	  *newday->setEatenLate(true);
+	}
+	if (input.find("-c") != string::npos) {
+	  *newday->setCaffeine(true);
+	}
+      }
+    }
+
+    if (input == "test") {
+      cout << "Workout: " << *newday->hasWorkout() << endl;
+      cout << "Alcohol: " << *newday->hasAlcohol() << endl;
+      cout << "Screen: " << *newday->hasScreened() << endl;
+      cout << "Eaten Late: " << *newday->hasEatenLate() << endl;
+      cout << "Caffeine: " << *newday->hasCaffeine() << endl;
+    }
     //allocate new object to ptr to start interval
     if (input == "start") {
       newsesh = new Interval();
@@ -37,10 +85,12 @@ int main() {
     //display options if help requested
     if (input == "help") {
       cout << "Available commands:\n" << endl;
+      cout << "record" << endl;
       cout << "start" << endl;
       cout << "end" << endl;
       cout << "cancel" << endl;
-      cout << "intervals\n" << endl;
+      cout << "intervals" << endl;
+      cout << "exit\n" << endl;
     }
 
     //deallocate object if interval is cancelled
@@ -52,11 +102,11 @@ int main() {
     //add the new interval with a terminated time
     if (input == "end") {
       time_t t = time(0);
-      string date = newsesh->getDate();
       newsesh->setTerm(t);
       intervals.insert(intervals.begin(), *newsesh);
       outfile.open("intervals.txt", ios_base::app);
-      outfile << date << "\n";
+      outfile << newsesh->getDate() << "\n";
+      outfile << newsesh->getDurationString() << "\n";
       outfile.close();
       delete(newsesh);
     }
@@ -84,14 +134,6 @@ int main() {
 	    infile.close();
 	  }
 	closedir( dp );
-      }
-      string lastdate = "";
-      for (Interval& interval : intervals) {
-	if (interval.getDate() != lastdate) {
-	  lastdate = interval.getDate();
-	  cout << lastdate << endl;
-	}	  
-	cout << interval.getDurationString() << "\n" << endl;
       }
     }
     

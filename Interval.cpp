@@ -9,6 +9,15 @@ int end;
 struct tm * now;
 string interval;
 
+Interval::Interval() {
+  this->begin = time(0);
+  this->now = localtime( & this->begin );
+  complete = false;
+}
+
+Interval::~Interval() {
+}
+
 string Interval::getDurationString() {
   long duration, sessionhrs,sessionmin, sessionsec;
 
@@ -41,19 +50,7 @@ long Interval::getDuration() {
 }
 	
 string Interval::getDate() {
-  
   string s;
-  s.append(to_string(this->now->tm_year + 1900)).append("-").append(to_string(this->now->tm_mon).append("-").append(to_string(this->now->tm_mday)));
   s = to_string(this->now->tm_mon) + "-" + to_string(this->now->tm_mday) + "-" + to_string(this->now->tm_year + 1900);
   return s;
-}
-
-Interval::Interval() {
-  this->begin = time(0);
-  this->now = localtime( & this->begin );
-  complete = false;
-}
-
-Interval::~Interval() {
-  //delete now;
 }
