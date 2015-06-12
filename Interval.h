@@ -1,12 +1,10 @@
 #include <ctime>
 #include <iostream>
 #include <string>
-#include <sstream>
-#include <algorithm>
 #include <iterator>
 #include <vector>
-#ifndef SESSION_H
-#define SESSION_H
+#ifndef INTERVAL_H
+#define INTERVAL_H
 
 using namespace std;
 
@@ -26,16 +24,11 @@ private:
   Interval();
   ~Interval();
   string getDurationString();
-  long getBegin();
   long getTerm();
   void setTerm(time_t term);
   bool isComplete();
   long getDuration();
   string getDate();
-  void setBegin(time_t time);
-  int getStart();
-  void setStart(int hrs);
-  int getEnd();
-  void setEnd(int min);
+
 };
 #endif

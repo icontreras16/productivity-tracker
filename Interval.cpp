@@ -22,10 +22,6 @@ string Interval::getDurationString() {
   return s;
 }
 
-time_t Interval::getBegin() {
-  return this->begin;
-}
-
 		    
 long Interval::getTerm() {
   return this->terminate;
@@ -51,19 +47,6 @@ string Interval::getDate() {
   s = to_string(this->now->tm_mon) + "-" + to_string(this->now->tm_mday) + "-" + to_string(this->now->tm_year + 1900);
   return s;
 }
-	
-int Interval::getStart() {
-  return start;
-}
-void Interval::setStart(int hrs) {
-  this->start = hrs;
-}
-int Interval::getEnd() {
-  return end;
-}
-void Interval::setEnd(int min) {
-  this->end = min;
-}	
 
 Interval::Interval() {
   this->begin = time(0);
@@ -74,4 +57,3 @@ Interval::Interval() {
 Interval::~Interval() {
   //delete now;
 }
-//end

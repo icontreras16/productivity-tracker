@@ -3,16 +3,16 @@ CC=g++ -Wall
 CFLAGS= -std=c++11 -c
 
 # this target will compile all the files
-all: test
+all: start
 
-test: Session.o main.o
-	$(CC) -std=c++11 main.o Session.o -o test
+start: Interval.o main.o
+	$(CC) -std=c++11 main.o Interval.o -o start
 
-Session.o: Session.cpp
-	$(CC) $(CFLAGS) Session.cpp
+Interval.o: Interval.cpp
+	$(CC) $(CFLAGS) Interval.cpp
 
 main.o: main.cpp
 	$(CC) $(CFLAGS) main.cpp
 
 clean:
-	rm -rf *.o test
+	rm -rf *.o start
