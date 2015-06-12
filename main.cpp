@@ -52,29 +52,29 @@ int main() {
 	if (input == "q") {break;}
 	//this allows multiple arguments to be provided at once
 	if (input.find("-w") != string::npos) {
-	  *newday->setWorkout(true);
+	  newday->setWorkout(true);
 	}
 	if (input.find("-d") != string::npos) {
-	  *newday->setAlcohol(true);
+	  newday->setAlcohol(true);
 	}
 	if (input.find("-s") != string::npos) {
-	  *newday->setScreened(true);
+	  newday->setScreened(true);
 	}
 	if (input.find("-a") != string::npos) {
-	  *newday->setEatenLate(true);
+	  newday->setEatenLate(true);
 	}
 	if (input.find("-c") != string::npos) {
-	  *newday->setCaffeine(true);
+	  newday->setCaffeine(true);
 	}
       }
     }
 
     if (input == "test") {
-      cout << "Workout: " << *newday->hasWorkout() << endl;
-      cout << "Alcohol: " << *newday->hasAlcohol() << endl;
-      cout << "Screen: " << *newday->hasScreened() << endl;
-      cout << "Eaten Late: " << *newday->hasEatenLate() << endl;
-      cout << "Caffeine: " << *newday->hasCaffeine() << endl;
+      cout << "Workout: " << newday->hasWorkout() << endl;
+      cout << "Alcohol: " << newday->hasAlcohol() << endl;
+      cout << "Screen: " << newday->hasScreened() << endl;
+      cout << "Eaten Late: " << newday->hasEatenLate() << endl;
+      cout << "Caffeine: " << newday->hasCaffeine() << endl;
     }
     //allocate new object to ptr to start interval
     if (input == "start") {
