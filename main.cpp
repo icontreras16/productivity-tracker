@@ -17,7 +17,8 @@ using namespace std;
 int main() {
   vector<Interval> intervals;
   string input = "";
-  Interval* newsesh;
+  bool seshflag,dayflag = false;
+  Interval* newsesh = new Interval();
   Day* newday;
   string filepath, line;
   ifstream infile;
@@ -32,13 +33,12 @@ int main() {
     //record factors for current day that affect sleep
     if (input == "record") {
       while (true) {
-	if (newday == NULL) {
-	  newday = new Day();
-	  cout << "New day being recorded" << endl;
-	}
 	cout << "Enter sleep arguments (h for help)>> " << flush;
+	if (!dayflag) {
+	  newday = new Day();
+	  dayflag = true;
+	}
 	getline(cin, input);
-
 	// handle list of arguments provided
 	if (input == "h") {
 	  cout << "All possible argument parameters:\n" << endl;
@@ -48,6 +48,7 @@ int main() {
 	  cout << "-a if you ate at a late hour" << endl;
 	  cout << "-c if you had caffeine" << endl;
 	  cout << "q to quit" << endl;
+	  cout << "\n" << endl;
 	}
 	if (input == "q") {break;}
 	//this allows multiple arguments to be provided at once
@@ -70,15 +71,19 @@ int main() {
     }
 
     if (input == "test") {
+      cout << "\n" << endl;
       cout << "Workout: " << newday->hasWorkout() << endl;
       cout << "Alcohol: " << newday->hasAlcohol() << endl;
       cout << "Screen: " << newday->hasScreened() << endl;
       cout << "Eaten Late: " << newday->hasEatenLate() << endl;
-      cout << "Caffeine: " << newday->hasCaffeine() << endl;
+      cout << "Caffeine: \n" << newday->hasCaffeine() << endl;
     }
+    
     //allocate new object to ptr to start interval
     if (input == "start") {
+      if (seshflag) {delete newsesh;} 
       newsesh = new Interval();
+      seshflag = true;
       cout << "New interval started\n" << endl;
     }
 
@@ -95,7 +100,8 @@ int main() {
 
     //deallocate object if interval is cancelled
     if (input == "cancel") {
-      delete(newsesh);
+      delete(newsesh); // deletes the previous session if a new one is started
+      seshflag = false;
       cout << "interval cancelled\n" << endl;
     }
 
@@ -109,11 +115,13 @@ int main() {
       outfile << newsesh->getDurationString() << "\n";
       outfile.close();
       delete(newsesh);
+      seshflag = false;
+      cout << "Session ended\n" << endl;
     }
 
     //display history of intervals
     if (input == "intervals") {
-      
+      cout << "\n" << endl;
       dp = opendir(".");
       if (dp == NULL)
 	{
@@ -135,6 +143,7 @@ int main() {
 	  }
 	closedir( dp );
       }
+      cout << "\n" << endl;
     }
     
     if (input == "exit") {

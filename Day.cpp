@@ -1,4 +1,6 @@
 #include "Day.h"
+#include <iostream>
+#include <string>
 
 // boolean values to save whether or not a sleep-affecting factor
 // occurred on this particular day
@@ -29,6 +31,7 @@ bool Day::hasWorkout() {
 }
 
 void Day::setWorkout(bool flag) {
+  std::string s = std::to_string(flag);
   this->workout = flag;
 }
 
