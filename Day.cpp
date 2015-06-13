@@ -26,43 +26,35 @@ std::string Day::getDate() {
   return this->date;
 }
 
+void Day::setRecord(std::string options) {
+  std::cout << "Day options recorded\n" << std::endl;
+  if (options.find("-w") != std::string::npos) {
+    this->workout = true;}
+  if (options.find("-d") != std::string::npos) {
+    this->alcohol = true;}
+  if (options.find("-s") != std::string::npos) {
+    this->screen = true;}
+  if (options.find("-a") != std::string::npos) {
+    this->eatlate = true;}
+  if (options.find("-c") != std::string::npos) {
+    this->caffeine = true;}
+}
 bool Day::hasWorkout() {
   return this->workout;
-}
-
-void Day::setWorkout(bool flag) {
-  std::string s = std::to_string(flag);
-  this->workout = flag;
 }
 
 bool Day::hasAlcohol() {
   return this->alcohol;
 }
 
-void Day::setAlcohol(bool flag) {
-  this->alcohol = flag;
-}
-
 bool Day::hasScreened() {
   return this->screen;
-}
-
-void Day::setScreened(bool flag) {
-  this->screen = flag;
 }
 
 bool Day::hasEatenLate() {
   return this->eatlate;
 }
 
-void Day::setEatenLate(bool flag) {
-  this->eatlate = flag;
-}
-
 bool Day::hasCaffeine() {
   return this->caffeine;
-}
-
-void Day::setCaffeine(bool flag) {
-  this->caffeine = flag;
 }

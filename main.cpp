@@ -11,143 +11,147 @@
 #include <vector>
 #include <ctime>
 
-using namespace std;
-
 /*main prompts user for commands and responds accordingly*/
 int main() {
-  vector<Interval> intervals;
-  string input = "";
+  std::string input, args;
   bool seshflag,dayflag = false;
   Interval* newsesh = new Interval();
   Day* newday;
-  string filepath, line;
-  ifstream infile;
-  ofstream outfile;
+  std::string filepath, line;
+  std::ifstream infile;
+  std::ofstream outfile;
   DIR *dp;
   struct dirent *dirp;
   
   while (true) {
-    cout << "Enter Command >> " << flush;
-    getline(cin, input);
+    std::cout << "Enter Command >> " << std::flush;
+    getline(std::cin, input);
 
     //record factors for current day that affect sleep
-    if (input == "record") {
-      while (true) {
-	cout << "Enter sleep arguments (h for help)>> " << flush;
+    if (input.length() >= 3) {
+      if (input[0]=='r' && input[1]=='e' && input[2]==' ') {
 	if (!dayflag) {
 	  newday = new Day();
 	  dayflag = true;
 	}
-	getline(cin, input);
-	// handle list of arguments provided
-	if (input == "h") {
-	  cout << "All possible argument parameters:\n" << endl;
-	  cout << "-w if you worked out" << endl;
-	  cout << "-d if you drank alcohol" << endl;
-	  cout << "-s if you were exposed to a display screen tonight" << endl;
-	  cout << "-a if you ate at a late hour" << endl;
-	  cout << "-c if you had caffeine" << endl;
-	  cout << "q to quit" << endl;
-	  cout << "\n" << endl;
+	newday->setRecord(input.erase(0, 3));
+      }
+    }
+    if (input.length() >= 7) {
+      std::string re = "record ";
+      bool match = true;
+      for (int i=0; i<7; i++) {
+	if (input[i] != re[i]) {
+	  match = false;	  
+	  break;
 	}
-	if (input == "q") {break;}
-	//this allows multiple arguments to be provided at once
-	if (input.find("-w") != string::npos) {
-	  newday->setWorkout(true);
+      }
+      
+      if (match) {
+	if (!dayflag) {
+	  newday = new Day();
+	  dayflag = true;
 	}
-	if (input.find("-d") != string::npos) {
-	  newday->setAlcohol(true);
-	}
-	if (input.find("-s") != string::npos) {
-	  newday->setScreened(true);
-	}
-	if (input.find("-a") != string::npos) {
-	  newday->setEatenLate(true);
-	}
-	if (input.find("-c") != string::npos) {
-	  newday->setCaffeine(true);
-	}
+	newday->setRecord(input.erase(0, 7));
       }
     }
 
-    if (input == "test") {
-      cout << "\n" << endl;
-      cout << "Workout: " << newday->hasWorkout() << endl;
-      cout << "Alcohol: " << newday->hasAlcohol() << endl;
-      cout << "Screen: " << newday->hasScreened() << endl;
-      cout << "Eaten Late: " << newday->hasEatenLate() << endl;
-      cout << "Caffeine: \n" << newday->hasCaffeine() << endl;
+    if (input == "fa" || input == "factors") {
+      std::cout << "\n" << std::endl;
+      std::cout << "Workout: " << newday->hasWorkout() << std::endl;
+      std::cout << "Alcohol: " << newday->hasAlcohol() << std::endl;
+      std::cout << "Screen: " << newday->hasScreened() << std::endl;
+      std::cout << "Eaten Late: " << newday->hasEatenLate() << std::endl;
+      std::cout << "Caffeine: " << newday->hasCaffeine() << "\n" << std::endl;
+      continue;
     }
     
-    //allocate new object to ptr to start interval
-    if (input == "start") {
+    //allocate new object to ptr to begin interval
+    if (input == "be" || input == "begin") {
       if (seshflag) {delete newsesh;} 
       newsesh = new Interval();
       seshflag = true;
-      cout << "New interval started\n" << endl;
+      std::cout << "New interval started\n" << std::endl;
+      continue;
     }
 
     //display options if help requested
-    if (input == "help") {
-      cout << "Available commands:\n" << endl;
-      cout << "record" << endl;
-      cout << "start" << endl;
-      cout << "end" << endl;
-      cout << "cancel" << endl;
-      cout << "intervals" << endl;
-      cout << "exit\n" << endl;
+    if (input == "h" || input == "help") {
+      std::cout << "The following commands are supported:\n" << std::endl;
+      std::cout << "  h [ help ]            produce this help message"  << std::endl;
+      std::cout << "  re [ record ] [OPTIONS]	record sleep affecting factors for current day" << std::endl;
+      std::cout << "  be [ begin ]		begin a new sleep interval"  << std::endl;
+      std::cout << "  e [ end ] 		end and save current sleep interval" << std::endl;
+      std::cout << "  ca [ cancel ]		cancel current sleep interval" << std::endl;
+      std::cout << "  in [ intervals ]	display history of sleep intervals" << std::endl;
+      std::cout << "  fa [ factors ] 	display recorded sleep factors for current day" << std::endl;
+      std::cout << "  q [ quit ]	 	exit Sleep Tracker\n" << std::endl;
+      std::cout << "The following options are supported by record command:\n" << std::endl;
+      std::cout << "-w, Worked out" << std::endl;
+      std::cout << "-d, Drank alcohol" << std::endl;
+      std::cout << "-s, Exposed to display screen at late hour" << std::endl;
+      std::cout << "-a, Ate at late hour" << std::endl;
+      std::cout << "-c, Had caffeine\n" << std::endl;
+      continue;
     }
 
     //deallocate object if interval is cancelled
-    if (input == "cancel") {
+    if (input == "ca" || input == "cancel") {
+      if (!seshflag) {
+	std::cout << "No sleep interval to cancel\n" << std::endl;
+	continue;}
       delete(newsesh); // deletes the previous session if a new one is started
       seshflag = false;
-      cout << "interval cancelled\n" << endl;
+      std::cout << "interval cancelled\n" << std::endl;
+      continue;
     }
 
     //add the new interval with a terminated time
-    if (input == "end") {
+    if (input == "e" || input == "end") {
+      if (!seshflag) {
+	std::cout << "No sleep interval to end\n" << std::endl;
+	continue;}
       time_t t = time(0);
       newsesh->setTerm(t);
-      intervals.insert(intervals.begin(), *newsesh);
-      outfile.open("intervals.txt", ios_base::app);
+      outfile.open("intervals.txt", std::ios_base::app);
       outfile << newsesh->getDate() << "\n";
       outfile << newsesh->getDurationString() << "\n";
       outfile.close();
       delete(newsesh);
       seshflag = false;
-      cout << "Session ended\n" << endl;
+      std::cout << "Session ended\n" << std::endl;
+      continue;
     }
 
     //display history of intervals
-    if (input == "intervals") {
-      cout << "\n" << endl;
+    if (input == "in" || input == "intervals") {
+      std::cout << "\n" << std::endl;
       dp = opendir(".");
       if (dp == NULL)
 	{
-	  cout << "Error(" << "No file found" << endl;
+	  std::cout << "Error(" << "No file found" << std::endl;
 	} else {
     
 	while ((dirp = readdir( dp )))
 	  {
-	    filepath = string("./") + dirp->d_name;
+	    filepath = std::string("./") + dirp->d_name;
 
 	    // If the file is not our text file, skip it
 	    if (filepath != "./intervals.txt") continue;
 	    // Display list of intervals
 	    infile.open(dirp->d_name);
 	    while (getline(infile, line)) {
-	      cout << line << endl;
+	      std::cout << line << std::endl;
 	    }
 	    infile.close();
 	  }
 	closedir( dp );
       }
-      cout << "\n" << endl;
+      std::cout << "\n" << std::endl;
+      continue;
     }
     
-    if (input == "exit") {
-      cout << "exiting\n" << endl;
+    if (input == "q" || input == "quit") {
       return 0;
     }
   }

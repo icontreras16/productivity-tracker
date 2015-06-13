@@ -7,7 +7,7 @@ long duration;
 bool complete;
 int end;
 struct tm * now;
-string interval;
+std::string interval;
 
 Interval::Interval() {
   this->begin = time(0);
@@ -18,7 +18,7 @@ Interval::Interval() {
 Interval::~Interval() {
 }
 
-string Interval::getDurationString() {
+std::string Interval::getDurationString() {
   long duration, sessionhrs,sessionmin, sessionsec;
 
   duration = this->getDuration();
@@ -27,7 +27,7 @@ string Interval::getDurationString() {
   sessionmin = (int) duration / 60;
   duration -= sessionmin*60;
   sessionsec = (int) duration;
-  string s = to_string(sessionhrs) + " hours " + to_string(sessionmin) + " min " + to_string(sessionsec) + " sec";
+  std::string s = std::to_string(sessionhrs) + " hours " + std::to_string(sessionmin) + " min " + std::to_string(sessionsec) + " sec";
   return s;
 }
 
@@ -49,8 +49,8 @@ long Interval::getDuration() {
   return (long) (terminate - begin);
 }
 	
-string Interval::getDate() {
-  string s;
-  s = to_string(this->now->tm_mon) + "-" + to_string(this->now->tm_mday) + "-" + to_string(this->now->tm_year + 1900);
+std::string Interval::getDate() {
+  std::string s;
+  s = std::to_string(this->now->tm_mon) + "-" + std::to_string(this->now->tm_mday) + "-" + std::to_string(this->now->tm_year + 1900);
   return s;
 }

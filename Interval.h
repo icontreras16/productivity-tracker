@@ -6,8 +6,6 @@
 #ifndef INTERVAL_H
 #define INTERVAL_H
 
-using namespace std;
-
 class Interval {
 	
 private:
@@ -18,17 +16,17 @@ private:
   bool complete;
   int end;
   struct tm * now;
-  string interval;
+  std::string interval;
   
  public:
   Interval();
   ~Interval();
-  string getDurationString();
+  std::string getDurationString();
   long getTerm();
   void setTerm(time_t term);
   bool isComplete();
   long getDuration();
-  string getDate();
+  std::string getDate();
 
 };
 #endif

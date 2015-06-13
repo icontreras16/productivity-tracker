@@ -11,14 +11,10 @@ class Day {
   Day();
   ~Day();
   std::string getDate();
+  void setRecord(std::string);
   bool hasWorkout();
-  void setWorkout(bool flag);
   bool hasAlcohol();
-  void setAlcohol(bool flag);
   bool hasScreened();
-  void setScreened(bool flag);
   bool hasEatenLate();
-  void setEatenLate(bool flag);
   bool hasCaffeine();
-  void setCaffeine(bool flag);
 };
