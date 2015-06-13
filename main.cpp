@@ -8,25 +8,50 @@
 #include <sys/types.h>
 #include "Interval.h"
 #include "Day.h"
+#include "Profile.h"
 #include <vector>
 #include <ctime>
 
 /*main prompts user for commands and responds accordingly*/
 int main() {
-  std::string input, args;
-  bool seshflag,dayflag = false;
+  std::string input, args, user, pass;
+  bool seshflag, dayflag, match = false;
   Interval* newsesh = new Interval();
   Day* newday;
   std::string filepath, line;
   std::ifstream infile;
   std::ofstream outfile;
-  DIR *dp;
-  struct dirent *dirp;
-  
+
+  std::cout << "Enter username or N to create new profile" << std::endl;
+  getline(std::cin, input);
+
+  //Create a profile if user is new
+  if (input == "N") {
+    std::cout << "Creating new profile" << std::endl;
+    std::cout << "Enter a username >> " << std::flush;
+    getline(std::cin, input);
+    user = input;
+
+  }
+
+    
   while (true) {
     std::cout << "Enter Command >> " << std::flush;
     getline(std::cin, input);
-
+    
+    //specify how many hrs past 24:00 will count as a sleep interval for the previous day
+    /*if (input.length() >= 3) {
+      std::string iw = "iw ";
+      match = true;
+      for (int i=0; i<3; i++) {
+	if (input[i] != iw[i]) {
+	  match = false;
+	  break;
+	}
+      }
+    }*/
+	
+    
     //record factors for current day that affect sleep
     if (input.length() >= 3) {
       if (input[0]=='r' && input[1]=='e' && input[2]==' ') {
@@ -35,11 +60,12 @@ int main() {
 	  dayflag = true;
 	}
 	newday->setRecord(input.erase(0, 3));
+	continue;
       }
     }
     if (input.length() >= 7) {
       std::string re = "record ";
-      bool match = true;
+      match = true;
       for (int i=0; i<7; i++) {
 	if (input[i] != re[i]) {
 	  match = false;	  
@@ -53,11 +79,17 @@ int main() {
 	  dayflag = true;
 	}
 	newday->setRecord(input.erase(0, 7));
+	continue;
       }
     }
-
+    
+    //display sleep factor status for current day
     if (input == "fa" || input == "factors") {
       std::cout << "\n" << std::endl;
+      if (!dayflag) {
+	newday = new Day();
+	dayflag = true;
+      }
       std::cout << "Workout: " << newday->hasWorkout() << std::endl;
       std::cout << "Alcohol: " << newday->hasAlcohol() << std::endl;
       std::cout << "Screen: " << newday->hasScreened() << std::endl;
@@ -113,10 +145,8 @@ int main() {
 	continue;}
       time_t t = time(0);
       newsesh->setTerm(t);
-      outfile.open("intervals.txt", std::ios_base::app);
-      outfile << newsesh->getDate() << "\n";
-      outfile << newsesh->getDurationString() << "\n";
-      outfile.close();
+      Profile pr;
+      pr.setIntervals(*newsesh);
       delete(newsesh);
       seshflag = false;
       std::cout << "Session ended\n" << std::endl;
@@ -125,35 +155,15 @@ int main() {
 
     //display history of intervals
     if (input == "in" || input == "intervals") {
-      std::cout << "\n" << std::endl;
-      dp = opendir(".");
-      if (dp == NULL)
-	{
-	  std::cout << "Error(" << "No file found" << std::endl;
-	} else {
-    
-	while ((dirp = readdir( dp )))
-	  {
-	    filepath = std::string("./") + dirp->d_name;
-
-	    // If the file is not our text file, skip it
-	    if (filepath != "./intervals.txt") continue;
-	    // Display list of intervals
-	    infile.open(dirp->d_name);
-	    while (getline(infile, line)) {
-	      std::cout << line << std::endl;
-	    }
-	    infile.close();
-	  }
-	closedir( dp );
-      }
-      std::cout << "\n" << std::endl;
+      Profile pr;
+      pr.showIntervals();
       continue;
     }
     
     if (input == "q" || input == "quit") {
       return 0;
     }
+    std::cout << "Command not recognized (h for help)\n" << std::endl;
   }
   return 0;
 }

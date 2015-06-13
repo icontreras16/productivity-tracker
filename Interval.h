@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 #include <iterator>
-#include <vector>
 #ifndef INTERVAL_H
 #define INTERVAL_H
 
