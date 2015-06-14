@@ -17,15 +17,14 @@ Profile::Profile(std::string name, bool newmem) {
   this->name = name;
   if (newmem) {
     std::cout << "New profile created\n" << std::endl;
-    outfile.open("intervals.txt");
-    outfile << name << "\n";
+    std::string filename = name + ".stf";
+    outfile.open(filename);
     outfile.close();
   }
   this->init = true;
 }
 
 Profile::~Profile() {
-
 }
 
 bool Profile::isInit() {
@@ -44,10 +43,8 @@ bool Profile::isName() {
   dp = opendir(".");
   while ((dirp = readdir( dp ))) {
     filepath = std::string("./") + dirp->d_name;
-    if (filepath == "./intervals.txt") {
-      infile.open(dirp->d_name);
-      getline(infile, line);
-      if (line == this->name) {return true;}
+    if (filepath.find(this->name) != std::string::npos) {
+      return true;
     }
   }
   return false;
@@ -62,7 +59,9 @@ void Profile::setTimeWindow(std::string newwindow) {
 }
 	     	     
 void Profile::setIntervals(Interval& interval) {
-  outfile.open("intervals.txt", std::ios_base::app);
+  std::string filename = this->name;
+  filename.append(".stf");
+  outfile.open(filename, std::ios_base::app);
   outfile << interval.getDate() << "\n";
   outfile << interval.getDurationString() << "\n";
   outfile.close();
@@ -80,7 +79,7 @@ void Profile::showIntervals() {
       filepath = std::string("./") + dirp->d_name;
 
       // If the file is not our text file, skip it
-      if (filepath != "./intervals.txt") continue;
+      if (filepath.find(this->name) == std::string::npos) continue;
       // Display list of intervals
       infile.open(dirp->d_name);
       while (getline(infile, line)) {
