@@ -14,27 +14,42 @@
 
 /*main prompts user for commands and responds accordingly*/
 int main() {
-  std::string input, args, user, pass;
+  std::string input, args;
   bool seshflag, dayflag, match = false;
   Interval* newsesh = new Interval();
   Day* newday;
+  Profile* propt;
   std::string filepath, line;
   std::ifstream infile;
   std::ofstream outfile;
 
-  std::cout << "Enter username or N to create new profile" << std::endl;
+  std::cout << "Enter username or N to create new profile\n" << std::endl;
   getline(std::cin, input);
-
-  //Create a profile if user is new
-  if (input == "N") {
-    std::cout << "Creating new profile" << std::endl;
-    std::cout << "Enter a username >> " << std::flush;
-    getline(std::cin, input);
-    user = input;
-
-  }
-
+  propt = new Profile(input, false);
+  while (!propt->isName()) {
+    //Create a profile if user is new
     
+    if (input == "N") {
+      std::cout << "Creating new profile" << std::endl;
+      std::cout << "Enter a username (8 or more characters) >> " << std::flush;
+      getline(std::cin, input);
+      delete propt;
+      propt = new Profile(input, true);
+      break;
+    } else {
+      delete propt;
+      propt = new Profile(input, false);
+      if (!propt->isName() && propt->isInit()) {
+	std::cout << "\n";
+	std::cout << "Username wrong or profile does not exist" << std::endl;
+	std::cout << "Enter username or N to create new profile\n" << std::endl;
+	getline(std::cin, input);
+	delete propt;
+	propt = new Profile(input, false);
+      }
+    }
+  }
+  
   while (true) {
     std::cout << "Enter Command >> " << std::flush;
     getline(std::cin, input);
@@ -145,8 +160,7 @@ int main() {
 	continue;}
       time_t t = time(0);
       newsesh->setTerm(t);
-      Profile pr;
-      pr.setIntervals(*newsesh);
+      propt->setIntervals(*newsesh);
       delete(newsesh);
       seshflag = false;
       std::cout << "Session ended\n" << std::endl;
@@ -155,8 +169,7 @@ int main() {
 
     //display history of intervals
     if (input == "in" || input == "intervals") {
-      Profile pr;
-      pr.showIntervals();
+      propt->showIntervals();
       continue;
     }
     

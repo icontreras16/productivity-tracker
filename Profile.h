@@ -14,12 +14,13 @@ class Profile {
   std::ofstream outfile;
   DIR *dp;
   struct dirent *dirp;
-
+  bool init;
   
  public:
   Profile();
   Profile(std::string, bool);
   ~Profile();
+  bool isInit();
   std::string getName();
   void setName(std::string);
   bool isName();
