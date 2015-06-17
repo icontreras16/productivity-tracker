@@ -1,5 +1,7 @@
 #include <ctime>
 #include <string>
+#ifndef DAY_H
+#define DAY_H
 
 class Day {
  private:
@@ -18,3 +20,4 @@ class Day {
   bool hasEatenLate();
   bool hasCaffeine();
 };
+#endif

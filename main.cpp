@@ -15,7 +15,7 @@
 /*main prompts user for commands and responds accordingly*/
 int main() {
   std::string input, args;
-  bool seshflag, dayflag, match = false;
+  bool seshflag = false , dayflag = false, match = false;
   Interval* newsesh = new Interval();
   Day* newday;
   Profile* propt;
@@ -27,11 +27,11 @@ int main() {
   getline(std::cin, input);
   propt = new Profile(input, false);
   while (!propt->isName()) {
-    //Create a profile if user is new
     
+    //Create a profile if user is new
     if (input == "N") {
       std::cout << "Creating new profile" << std::endl;
-      std::cout << "Enter a username (8 or more characters) >> " << std::flush;
+      std::cout << "Enter a username >> " << std::flush;
       getline(std::cin, input);
       delete propt;
       propt = new Profile(input, true);
@@ -39,7 +39,7 @@ int main() {
     } else {
       delete propt;
       propt = new Profile(input, false);
-      if (!propt->isName() && propt->isInit()) {
+      if (!propt->isName()) {
 	std::cout << "\n";
 	std::cout << "Username wrong or profile does not exist" << std::endl;
 	std::cout << "Enter username or N to create new profile\n" << std::endl;
@@ -74,7 +74,8 @@ int main() {
 	  newday = new Day();
 	  dayflag = true;
 	}
-	newday->setRecord(input.erase(0, 3));
+	//newday->setRecord(input.erase(0, 3));
+	propt->setRecord(input.erase(0, 3));
 	continue;
       }
     }

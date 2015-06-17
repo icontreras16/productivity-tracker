@@ -1,4 +1,5 @@
 #include "Interval.h"
+#include "Day.h"
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -14,18 +15,19 @@ class Profile {
   std::ofstream outfile;
   DIR *dp;
   struct dirent *dirp;
-  bool init;
+  Day* daypt;
+  bool dayflag;
   
  public:
   Profile();
   Profile(std::string, bool);
   ~Profile();
-  bool isInit();
   std::string getName();
   void setName(std::string);
   bool isName();
   std::string getTimeWindow();
   void setTimeWindow(std::string);
+  void setRecord(std::string);
   void setIntervals(Interval&);
   void showIntervals();
 };
