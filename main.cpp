@@ -26,8 +26,7 @@ int main() {
   std::cout << "Enter username or N to create new profile\n" << std::endl;
   getline(std::cin, input);
   propt = new Profile(input, false);
-  while (!propt->isName()) {
-    
+  while (!propt->isName()) {    
     //Create a profile if user is new
     if (input == "N") {
       std::cout << "Creating new profile" << std::endl;
@@ -54,9 +53,11 @@ int main() {
     std::cout << "Enter Command >> " << std::flush;
     getline(std::cin, input);
     
-    //specify how many hrs past 24:00 will count as a sleep interval for the previous day
-    /*if (input.length() >= 3) {
+    //specify how much time past 24:00 will count as a sleep interval for the previous day
+    if (input.length() >= 3) {
+      std::string time = "";
       std::string iw = "iw ";
+      bool isvalid = true;
       match = true;
       for (int i=0; i<3; i++) {
 	if (input[i] != iw[i]) {
@@ -64,8 +65,23 @@ int main() {
 	  break;
 	}
       }
-    }*/
-	
+      if (match) {
+	input.erase(0, 3);
+	for (int i=0; i<5; i++) {
+	  if ( !isdigit(input[i]) && input[i] != ':') {
+	    std::cout << "Error: Not a valid time format\n" << std::endl;
+	    isvalid = false;
+	    continue;
+	  }
+	  time = input;
+	}
+	if (!isvalid) {continue;}
+	else {
+	  propt->setTimeWindow(time);
+	  continue;
+	}
+      }
+    }	
     
     //record factors for current day that affect sleep
     if (input.length() >= 3) {
@@ -74,7 +90,6 @@ int main() {
 	  newday = new Day();
 	  dayflag = true;
 	}
-	//newday->setRecord(input.erase(0, 3));
 	propt->setRecord(input.erase(0, 3));
 	continue;
       }
@@ -94,7 +109,7 @@ int main() {
 	  newday = new Day();
 	  dayflag = true;
 	}
-	newday->setRecord(input.erase(0, 7));
+	propt->setRecord(input.erase(0, 7));
 	continue;
       }
     }

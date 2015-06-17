@@ -15,6 +15,7 @@ Profile::Profile() {
 
 Profile::Profile(std::string name, bool newmem) {
   this->name = name;
+  this->window = "00:00";
   if (newmem) {
     std::cout << "New profile created\n" << std::endl;
     std::string filename = name + ".stf";
@@ -36,9 +37,10 @@ void Profile::setName(std::string newname) {
 
 bool Profile::isName() {
   dp = opendir(".");
+  std::string checkname = this->name + ".stf";
   while ((dirp = readdir( dp ))) {
     filepath = std::string("./") + dirp->d_name;
-    if (filepath.find(this->name) != std::string::npos) {
+    if (filepath.find(checkname) != std::string::npos) {
       return true;
     }
   }
@@ -51,6 +53,41 @@ std::string Profile::getTimeWindow() {
 	     
 void Profile::setTimeWindow(std::string newwindow) {
   this->window = newwindow;
+  std::ifstream infile;
+  std::ofstream outfile, newfile;
+  std::string filename = this->name + ".stf";
+  std::string line;
+  Interval iv;
+  bool datematch = false;
+  infile.open(filename);
+  while (getline(infile, line)) {
+    if (line.find(iv.getDate()) != std::string::npos) {
+      datematch = true;
+      break;
+    }
+  }
+  infile.close();
+  if (!datematch) {
+    outfile.open(filename, std::ios::app);
+    outfile << iv.getDate() << " + " << newwindow << "\n";
+    outfile << "W:0  D:0  S:0  A:0  C:0" << "\n";
+    outfile.close();
+    return;
+  }
+  infile.open(filename);
+  newfile.open("temp.txt");
+  while (getline(infile, line)) {
+    if (line.find(iv.getDate()) != std::string::npos) {
+      newfile << iv.getDate() << " + " << newwindow << "\n"; //replace with the date + window
+      getline(infile, line);
+      newfile << line << "\n"; //retrieve factor flags as well
+      break;
+    }
+  }
+  infile.close();
+  newfile.close();
+  remove(filename.c_str());
+  rename("temp.txt", filename.c_str());
 }
 
 /*Toggles the current day's list of factor flags according to newargs*/
@@ -58,21 +95,16 @@ void Profile::setRecord(std::string newargs) {
   
   Interval iv;
   std::string filename = this->name;
-  std::string delim = "  ";
   std::string token;
   std::string oldargs = "";
   std::string newline = "";
-  std::size_t pos;
-  pos = 0;
-  int value;
-  bool toggle;
   bool datefound = false;
   filename.append(".stf");
   infile.open(filename); //infile has original file
   outfile.open("temp.txt", std::ofstream::app);
   while (getline(infile, line)) {
     outfile << line << "\n";
-    if (line == iv.getDate()) {
+    if (line.find(iv.getDate()) != std::string::npos) {
       getline(infile, line);
       datefound = true;
       break;
@@ -92,9 +124,10 @@ void Profile::setRecord(std::string newargs) {
 
   infile.open(filename);
   line = "";
-  while (line != iv.getDate()) {
+  while (line.find(iv.getDate()) != std::string::npos) { 
     getline(infile, line);
   }
+  getline(infile, line); //advance twice to get to current factors
   getline(infile, line);
   infile.close();
   for (int i=0; i<newargs.length(); i++) {
@@ -164,9 +197,8 @@ void Profile::setRecord(std::string newargs) {
   	outfile << copy << "\n";
       }
     }
-  }   
+  }
   infile.close();
-  
   outfile.close();
   infile.open("temp.txt");
   outfile.open(filename);
@@ -184,7 +216,7 @@ void Profile::setIntervals(Interval& interval) {
   filename.append(".stf");
   infile.open(filename);
   while (getline(infile, line)) {
-    if (line == interval.getDate()) {
+    if (line.find(interval.getDate()) != std::string::npos) {
       datefound = true;
       break;
     }
