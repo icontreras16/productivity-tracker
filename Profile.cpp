@@ -154,21 +154,20 @@ void Profile::setRecord(std::string newargs) {
       return;
     }
   }
-  //std::string copy = "";
-  //infile.open(filename);
+  std::string copy = "";
+  infile.open(filename);
   outfile.open("temp.txt", std::ofstream::app); //append newly toggled factors
   outfile << line << "\n";
-  // while (getline(infile, copy)) {
-  //   if (copy.find(line) != std::string::npos) {
-  //     getline(infile, copy);
-  //     while (getline(infile, copy)) {
-  // 	outfile << copy << "\n";
-  //     }
-  //   }
-  // }   
-  // infile.close();
-  outfile.close();
+  while (getline(infile, copy)) {
+    if (copy.find("W:") != std::string::npos) {
+      while (getline(infile, copy)) {
+  	outfile << copy << "\n";
+      }
+    }
+  }   
+  infile.close();
   
+  outfile.close();
   infile.open("temp.txt");
   outfile.open(filename);
   while (getline(infile, line)) { //start overwriting the save file
