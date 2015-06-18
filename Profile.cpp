@@ -79,8 +79,9 @@ void Profile::setTimeWindow(std::string newwindow) {
   while (getline(infile, line)) {
     if (line.find(iv.getDate()) != std::string::npos) {
       newfile << iv.getDate() << " + " << newwindow << "\n"; //replace with the date + window
-      getline(infile, line);
-      newfile << line << "\n"; //retrieve factor flags as well
+      while(getline(infile, line)) {
+	newfile << line << "\n"; //retrieve factor flags and intervals as well
+      }
       break;
     }
   }
