@@ -13,6 +13,7 @@ Profile::Profile() {
   this->name = "!";
 }
 
+/* Initialize new Profile with date, flags, and saved flags file */
 Profile::Profile(std::string name, bool newmem) {
   this->name = name;
   this->window = "00:00";
@@ -24,6 +25,10 @@ Profile::Profile(std::string name, bool newmem) {
     outfile << iv.getDate() << " + " << this->window << "\n";
     outfile << "W:0  D:0  S:0  A:0  C:0" << "\n";
     outfile.close();
+    filename = name + "flags.stf";
+    std::ifstream src("flagstemplate.stf");
+    std::ofstream dst(filename);
+    dst << src.rdbuf();
   }
 }
 
@@ -246,7 +251,7 @@ void Profile::showIntervals() {
     while ((dirp = readdir( dp ))) {
       filepath = std::string("./") + dirp->d_name;
       // If the file is not our text file, skip it
-      if (filepath.find(this->name) == std::string::npos) continue;
+      if (filepath.find(this->name + ".stf") == std::string::npos) continue;
       // Display list of intervals
       infile.open(dirp->d_name);
       while (getline(infile, line)) {

@@ -17,16 +17,24 @@ Interval::Interval() {
 Interval::Interval(std::string timewindow) {
   bool colon = false;
   long toadd = 0, offset = 0;
+  std::string timestring = "";
   for (int i = 0; i < timewindow.length(); i++) {
-    if (timewindow[i] == ':') {colon=true; continue;}
-    if (!colon) {
-      toadd = (long) timewindow[i] - '0'; // convert hours to seconds and add to offset
-      toadd = toadd*60*60;
-      offset += toadd;
-    } else {
-      toadd = (long) timewindow[i] - '0'; // same for minutes
+    timestring += timewindow[i];
+    if (colon && i == timewindow.length()-1) { // convert minutes to seconds
+      toadd = (long) atoi(timestring.c_str());
       toadd = toadd*60;
       offset += toadd;
+      break;
+    }
+    if (timewindow[i] == ':') { // convert hours to seconds
+      timestring.erase(2);
+      colon=true;
+      toadd = (long) atoi(timestring.c_str());
+      toadd = toadd*60*60;
+      offset += toadd;
+      colon = true;
+      timestring = "";
+      continue;
     }
   }
   this->begin = time(0) - offset;
@@ -57,16 +65,24 @@ long Interval::getTerm() {
 void Interval::setTerm(time_t term, std::string timewindow) {
   bool colon = false;
   long toadd = 0, offset = 0;
+  std::string timestring = "";
   for (int i = 0; i < timewindow.length(); i++) {
-    if (timewindow[i] == ':') {colon=true; continue;}
-    if (!colon) {
-      toadd = (long) timewindow[i] - '0'; // convert hours to seconds and add to offset
-      toadd = toadd*60*60;
-      offset += toadd;
-    } else {
-      toadd = (long) timewindow[i] - '0'; // same for minutes
+    timestring += timewindow[i];
+    if (colon && i == timewindow.length()-1) { // convert minutes to seconds
+      toadd = (long) atoi(timestring.c_str());
       toadd = toadd*60;
       offset += toadd;
+      break;
+    }
+    if (timewindow[i] == ':') { // convert hours to seconds
+      timestring.erase(2);
+      colon=true;
+      toadd = (long) atoi(timestring.c_str());
+      toadd = toadd*60*60;
+      offset += toadd;
+      colon = true;
+      timestring = "";
+      continue;
     }
   }
   this->terminate = term - offset;

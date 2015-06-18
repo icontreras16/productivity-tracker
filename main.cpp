@@ -38,7 +38,7 @@ int main() {
     } else {
       delete propt;
       propt = new Profile(input, false);
-      if (!propt->isName()) {
+      if (!propt->isName()) { // handle case for incorrect username
 	std::cout << "\n";
 	std::cout << "Username wrong or profile does not exist" << std::endl;
 	std::cout << "Enter username or N to create new profile\n" << std::endl;
@@ -48,7 +48,7 @@ int main() {
       }
     }
   }
-  
+  /* Continue to execute program until user quits */
   while (true) {
     std::cout << "Enter Command >> " << std::flush;
     getline(std::cin, input);
@@ -82,7 +82,6 @@ int main() {
 	}
       }
     }
-    
     if (input.length() >= 7) {
       std::string time = "";
       std::string win = "window ";
@@ -142,23 +141,8 @@ int main() {
 	continue;
       }
     }
-    
-    //display sleep factor status for current day
-    if (input == "fa" || input == "factors") {
-      std::cout << "\n" << std::endl;
-      if (!dayflag) {
-	newday = new Day();
-	dayflag = true;
-      }
-      std::cout << "Workout: " << newday->hasWorkout() << std::endl;
-      std::cout << "Alcohol: " << newday->hasAlcohol() << std::endl;
-      std::cout << "Screen: " << newday->hasScreened() << std::endl;
-      std::cout << "Eaten Late: " << newday->hasEatenLate() << std::endl;
-      std::cout << "Caffeine: " << newday->hasCaffeine() << "\n" << std::endl;
-      continue;
-    }
-    
-    //allocate new object to ptr to begin interval
+
+    //begin a new interval with the profile's offset if any
     if (input == "be" || input == "begin") {
       if (seshflag) {delete newsesh;} 
       newsesh = new Interval(propt->getTimeWindow());
@@ -187,12 +171,12 @@ int main() {
       continue;
     }
 
-    //deallocate object if interval is cancelled
+    //deallocate interval if cancelled
     if (input == "ca" || input == "cancel") {
       if (!seshflag) {
 	std::cout << "No sleep interval to cancel\n" << std::endl;
 	continue;}
-      delete(newsesh); // deletes the previous session if a new one is started
+      delete(newsesh);
       seshflag = false;
       std::cout << "interval cancelled\n" << std::endl;
       continue;
@@ -212,7 +196,7 @@ int main() {
       continue;
     }
 
-    //display history of intervals
+    //display history of intervals and sleep factors
     if (input == "in" || input == "intervals") {
       propt->showIntervals();
       continue;
