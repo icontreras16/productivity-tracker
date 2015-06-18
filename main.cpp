@@ -16,7 +16,7 @@
 int main() {
   std::string input, args;
   bool seshflag = false , dayflag = false, match = false;
-  Interval* newsesh = new Interval();
+  Interval* newsesh;
   Day* newday;
   Profile* propt;
   std::string filepath, line;
@@ -54,19 +54,19 @@ int main() {
     getline(std::cin, input);
     
     //specify how much time past 24:00 will count as a sleep interval for the previous day
-    if (input.length() >= 3) {
+    if (input.length() >= 2) {
       std::string time = "";
-      std::string iw = "iw ";
+      std::string win = "w ";
       bool isvalid = true;
       match = true;
-      for (int i=0; i<3; i++) {
-	if (input[i] != iw[i]) {
+      for (int i=0; i<win.length(); i++) {
+	if (input[i] != win[i]) {
 	  match = false;
 	  break;
 	}
       }
       if (match) {
-	input.erase(0, 3);
+	input.erase(0, 2);
 	for (int i=0; i<5; i++) {
 	  if ( !isdigit(input[i]) && input[i] != ':') {
 	    std::cout << "Error: Not a valid time format\n" << std::endl;
@@ -81,7 +81,36 @@ int main() {
 	  continue;
 	}
       }
-    }	
+    }
+    
+    if (input.length() >= 7) {
+      std::string time = "";
+      std::string win = "window ";
+      bool isvalid = true;
+      match = true;
+      for (int i=0; i<win.length(); i++) {
+	if (input[i] != win[i]) {
+	  match = false;
+	  break;
+	}
+      }
+      if (match) {
+	input.erase(0, 7);
+	for (int i=0; i<5; i++) {
+	  if ( !isdigit(input[i]) && input[i] != ':') {
+	    std::cout << "Error: Not a valid time format\n" << std::endl;
+	    isvalid = false;
+	    continue;
+	  }
+	  time = input;
+	}
+	if (!isvalid) {continue;}
+	else {
+	  propt->setTimeWindow(time);
+	  continue;
+	}
+      }
+    }
     
     //record factors for current day that affect sleep
     if (input.length() >= 3) {
@@ -132,7 +161,7 @@ int main() {
     //allocate new object to ptr to begin interval
     if (input == "be" || input == "begin") {
       if (seshflag) {delete newsesh;} 
-      newsesh = new Interval();
+      newsesh = new Interval(propt->getTimeWindow());
       seshflag = true;
       std::cout << "New interval started\n" << std::endl;
       continue;
@@ -175,7 +204,7 @@ int main() {
 	std::cout << "No sleep interval to end\n" << std::endl;
 	continue;}
       time_t t = time(0);
-      newsesh->setTerm(t);
+      newsesh->setTerm(t, propt->getTimeWindow());
       propt->setIntervals(*newsesh);
       delete(newsesh);
       seshflag = false;

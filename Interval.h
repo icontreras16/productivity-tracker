@@ -19,10 +19,11 @@ private:
   
  public:
   Interval();
+  Interval(std::string);
   ~Interval();
   std::string getDurationString();
   long getTerm();
-  void setTerm(time_t term);
+  void setTerm(time_t, std::string);
   bool isComplete();
   long getDuration();
   std::string getDate();

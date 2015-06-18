@@ -20,6 +20,8 @@ same directory. To execute program:
 The following commands are supported:
   
   h [ help ]		produce this help message
+
+  w [ window ] [HH:MM]	specify how much time past 24:00 will count as a sleep interval for the previous day
   
   re [ record ]	[OPTIONS]	record sleep affecting factors for current day
        	      		
@@ -29,14 +31,12 @@ The following commands are supported:
   
   ca [ cancel ]		cancel current sleep interval
   
-  in [ intervals ]	display history of sleep intervals
-  
-  fa [ factors ] 	display recorded sleep factors for current day
+  in [ intervals ]	display history of sleep
   
   q [ quit ]	 	exit Sleep Tracker
 
 
-The following options are supported by "record" command:
+The following options are supported by "record" command. Options are toggled.
 
   -w, Worked out
   

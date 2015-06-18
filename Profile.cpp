@@ -16,10 +16,13 @@ Profile::Profile() {
 Profile::Profile(std::string name, bool newmem) {
   this->name = name;
   this->window = "00:00";
+  Interval iv;
   if (newmem) {
     std::cout << "New profile created\n" << std::endl;
     std::string filename = name + ".stf";
     outfile.open(filename);
+    outfile << iv.getDate() << " + " << this->window << "\n";
+    outfile << "W:0  D:0  S:0  A:0  C:0" << "\n";
     outfile.close();
   }
 }
@@ -231,7 +234,7 @@ void Profile::setIntervals(Interval& interval) {
   outfile << interval.getDurationString() << "\n";
   outfile.close();
 }
-	     
+
 void Profile::showIntervals() {
   std::cout << "\n" << std::endl;
   dp = opendir(".");
