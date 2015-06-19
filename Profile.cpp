@@ -22,13 +22,9 @@ Profile::Profile(std::string name, bool newmem) {
     std::cout << "New profile created\n" << std::endl;
     std::string filename = name + ".stf";
     outfile.open(filename);
-    outfile << iv.getDate() << " + " << this->window << "\n";
+    outfile << iv.getDate() << " \n";
     outfile << "W:0  D:0  S:0  A:0  C:0" << "\n";
     outfile.close();
-    filename = name + "flags.stf";
-    std::ifstream src("flagstemplate.stf");
-    std::ofstream dst(filename);
-    dst << src.rdbuf();
   }
 }
 
@@ -101,7 +97,6 @@ void Profile::setTimeWindow(std::string newwindow) {
 
 /*Toggles the current day's list of factor flags according to newargs*/
 void Profile::setRecord(std::string newargs) {
-  
   Interval iv;
   std::string filename = this->name;
   std::string token;
@@ -196,12 +191,17 @@ void Profile::setRecord(std::string newargs) {
       return;
     }
   }
+  std::cout << "New flags: " <<  line << std::endl;
   std::string copy = "";
+  std::string oldval = "", newval = line;
   infile.open(filename);
   outfile.open("temp.txt", std::ofstream::app); //append newly toggled factors
   outfile << line << "\n";
   while (getline(infile, copy)) {
-    if (copy.find("W:") != std::string::npos) {
+    if (copy.find(iv.getDate()) != std::string::npos) {
+      getline(infile, copy); // go to next flags line
+      oldval = copy;
+      std::cout << "Old flags: " << copy << std::endl;
       while (getline(infile, copy)) {
   	outfile << copy << "\n";
       }
