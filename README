@@ -21,19 +21,19 @@ The following commands are supported:
   
   h [ help ]		produce this help message
 
-  w [ window ] [HH:MM]	specify how much time past 24:00 will count as a sleep interval for the previous day
+  w [ window ] [HH:MM]	specify how much time past 24:00 will count as an interval for the previous day
   
-  re [ record ]	[OPTIONS]	record sleep affecting factors for current day
+  re [ record ]	[OPTIONS]	record productivity/sleep affecting factors for current day
        	      		
-  be [ begin ]		begin a new sleep interval (will cancel any current intervals
+  be [ begin ]		begin a new interval (will cancel any current intervals)
   
-  e [ end ] 		end and save current sleep interval
+  e [ end ] 		end and save current interval
   
-  ca [ cancel ]		cancel current sleep interval
+  ca [ cancel ]		cancel current interval
   
-  in [ intervals ]	display history of sleep
+  in [ intervals ]	display history of intervals
   
-  q [ quit ]	 	exit Sleep Tracker
+  q [ quit ]	 	exit program
 
 
 The following options are supported by "record" command. Options are toggled.
