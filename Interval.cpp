@@ -56,7 +56,6 @@ std::string Interval::getDurationString() {
   std::string s = std::to_string(sessionhrs) + " hours " + std::to_string(sessionmin) + " min " + std::to_string(sessionsec) + " sec";
   return s;
 }
-
 		    
 long Interval::getTerm() {
   return this->terminate;

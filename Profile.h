@@ -2,6 +2,7 @@
 #include "Day.h"
 #include <iostream>
 #include <string>
+#include <vector>
 #include <fstream>
 #include <dirent.h>
 #include <unistd.h>

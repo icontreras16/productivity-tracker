@@ -19,11 +19,12 @@ Profile::Profile(std::string name, bool newmem) {
   this->window = "00:00";
   Interval iv;
   if (newmem) {
-    std::cout << "New profile created\n" << std::endl;
+    std::cout << "\nNew profile created\n" << std::endl;
     std::string filename = name + ".stf";
     outfile.open(filename);
-    outfile << iv.getDate() << " \n";
+    outfile << iv.getDate() << " + " << this->window << "\n";
     outfile << "W:0  D:0  S:0  A:0  C:0" << "\n";
+    outfile << "Total Session Time: 0 hours 0 min 0 sec\n";
     outfile.close();
   }
 }
@@ -191,7 +192,6 @@ void Profile::setRecord(std::string newargs) {
       return;
     }
   }
-  std::cout << "New flags: " <<  line << std::endl;
   std::string copy = "";
   std::string oldval = "", newval = line;
   infile.open(filename);
@@ -201,7 +201,6 @@ void Profile::setRecord(std::string newargs) {
     if (copy.find(iv.getDate()) != std::string::npos) {
       getline(infile, copy); // go to next flags line
       oldval = copy;
-      std::cout << "Old flags: " << copy << std::endl;
       while (getline(infile, copy)) {
   	outfile << copy << "\n";
       }
@@ -221,7 +220,9 @@ void Profile::setRecord(std::string newargs) {
 
 void Profile::setIntervals(Interval& interval) {
   std::string filename = this->name;
-  bool datefound = false;
+  std::string newfile = "temp.stf";
+  std::string stringval = "";
+  bool datefound = false, intoken = false;
   filename.append(".stf");
   infile.open(filename);
   while (getline(infile, line)) {
@@ -231,13 +232,80 @@ void Profile::setIntervals(Interval& interval) {
     }
   }
   infile.close();
-  outfile.open(filename, std::ofstream::app);
   if (!datefound) {
+    outfile.open(filename, std::ofstream::app); // will append to very bottom of file
     outfile << interval.getDate() << "\n";
     outfile << "W:0  D:0  S:0  A:0  C:0" << "\n";
+    outfile << interval.getDurationString() << "\n";
+    outfile << "Total Session Time: " << interval.getDurationString() << "\n";
+    outfile.close();
+    return;
+  } else {
+    int toadd = 0;
+    int sumhrs = 0, summin = 0, sumsec = 0;
+    int HMS [3] = {1,0,0}; // tracks if we're in hours, minutes, or seconds
+    line = "";
+    infile.open(filename);
+    outfile.open(newfile, std::ofstream::app);
+    getline(infile, line);
+    while (line.find(interval.getDate()) == std::string::npos) { // get history up to current interval date
+      outfile << line << "\n";
+      getline(infile, line);
+    }
+    while(line.find("Total") == std::string::npos) { // get current date's intervals up to total
+      outfile << line << "\n";
+      getline(infile, line);
+    }
+    outfile << interval.getDurationString() << "\n"; // insert current interval
+    std::vector<std::string> tosum = {line, interval.getDurationString()};
+     // sum up current interval and total time
+    for (int i = 0; i < tosum.size(); i++) {
+      std::string addend = tosum[i];
+      for (int j = 0; j < addend.length(); j++) {
+	if (isdigit(addend[j])) {
+	  stringval += addend[j];
+	  intoken = true;
+	}
+	if (isdigit(addend[j]) == 0 && intoken && HMS[0] == 1) {
+	  toadd = atoi(stringval.c_str());
+	  sumhrs += toadd;
+	  stringval = "";
+	  intoken = false;
+	  HMS[0] = 0;
+	  HMS[1] = 1;
+	}
+	if (isdigit(addend[j]) == 0 && intoken && HMS[1] == 1) {
+	  toadd = atoi(stringval.c_str());
+	  summin += toadd;
+	  stringval = "";
+	  intoken = false;
+	  HMS[1] = 0;
+	  HMS[2] = 1;
+	}
+	if (isdigit(addend[j]) == 0 && intoken && HMS[2] == 1) {
+	  toadd = atoi(stringval.c_str());
+	  sumsec += toadd;
+	  stringval = "";
+	  intoken = false;
+	  HMS[2] = 0;
+	  HMS[0] = 1;
+	}
+      }
+    }
+    summin += (sumsec / 60); // consolidate seconds and minutes overflow
+    sumsec = (sumsec % 60);
+    sumhrs += (summin / 60);
+    summin = (summin % 60);
+    stringval = "Total Session Time: " + std::to_string(sumhrs) + " hours " + std::to_string(summin) + " min " + std::to_string(sumsec) + " sec";
+    outfile << stringval << "\n";
+    while (getline(infile, line)) { // get rest of history if any is left
+      outfile << line << "\n";
+    }
+    infile.close();
+    outfile.close();
+    remove(filename.c_str());
+    rename("temp.stf", filename.c_str());
   }
-  outfile << interval.getDurationString() << "\n";
-  outfile.close();
 }
 
 void Profile::showIntervals() {
