@@ -3,13 +3,10 @@
 #include <sstream>
 #include <string>
 #include <dirent.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+
 #include "Interval.h"
 #include "Day.h"
 #include "Profile.h"
-#include <vector>
 #include <ctime>
 
 /*main prompts user for commands and responds accordingly*/
@@ -52,7 +49,6 @@ int main() {
   while (true) {
     std::cout << "Enter Command >> " << std::flush;
     getline(std::cin, input);
-    
     //specify how much time past 24:00 will count as a sleep interval for the previous day
     if (input.length() >= 2) {
       std::string time = "";
@@ -65,10 +61,31 @@ int main() {
 	  break;
 	}
       }
+      if (match && seshflag) {
+	std::cout << "Error: Cannot change time window while a session is in progress\n" << std::endl;
+	continue;
+      }
       if (match) {
 	input.erase(0, 2);
+	if (input.length() != 5) {
+	  std::cout << "Error: Not a valid time format\n" << std::endl;
+	  isvalid = false;
+	  continue;
+	}
 	for (int i=0; i<5; i++) {
-	  if ( !isdigit(input[i]) && input[i] != ':') {
+	  if (i==2) {
+	    if (input[i] != ':') {
+	      std::cout << "Error: Not a valid time format\n" << std::endl;
+	      isvalid = false;
+	      continue;
+	    }
+	  }
+	  if (!isdigit(input[i]) && input[i] != ':') {
+	    std::cout << "Error: Not a valid time format\n" << std::endl;
+	    isvalid = false;
+	    continue;
+	  }
+	  if (input[i] == ':' && i != 2) {
 	    std::cout << "Error: Not a valid time format\n" << std::endl;
 	    isvalid = false;
 	    continue;
@@ -93,10 +110,31 @@ int main() {
 	  break;
 	}
       }
+      if (match && seshflag) {
+	std::cout << "Error: Cannot change time window while a session is in progress\n" << std::endl;
+	continue;
+      }      
       if (match) {
 	input.erase(0, 7);
+	if (input.length() != 5) {
+	  std::cout << "Error: Not a valid time format\n" << std::endl;
+	  isvalid = false;
+	  continue;
+	}
 	for (int i=0; i<5; i++) {
+	  if (i==2) {
+	    if (input[i] != ':') {
+	      std::cout << "Error: Not a valid time format\n" << std::endl;
+	      isvalid = false;
+	      continue;
+	    }
+	  }
 	  if ( !isdigit(input[i]) && input[i] != ':') {
+	    std::cout << "Error: Not a valid time format\n" << std::endl;
+	    isvalid = false;
+	    continue;
+	  }
+	  if (input[i] == ':' && i != 2) {
 	    std::cout << "Error: Not a valid time format\n" << std::endl;
 	    isvalid = false;
 	    continue;
@@ -110,7 +148,6 @@ int main() {
 	}
       }
     }
-    
     //record factors for current day that affect sleep
     if (input.length() >= 3) {
       if (input[0]=='r' && input[1]=='e' && input[2]==' ') {
@@ -131,7 +168,6 @@ int main() {
 	  break;
 	}
       }
-      
       if (match) {
 	if (!dayflag) {
 	  newday = new Day();
@@ -141,7 +177,6 @@ int main() {
 	continue;
       }
     }
-
     //begin a new interval with the profile's offset if any
     if (input == "be" || input == "begin") {
       if (seshflag) {delete newsesh;} 
@@ -150,18 +185,18 @@ int main() {
       std::cout << "New interval started\n" << std::endl;
       continue;
     }
-
     //display options if help requested
     if (input == "h" || input == "help") {
       std::cout << "The following commands are supported:\n" << std::endl;
       std::cout << "  h [ help ]            produce this help message"  << std::endl;
-      std::cout << "  re [ record ] [OPTIONS]	record sleep affecting factors for current day" << std::endl;
-      std::cout << "  be [ begin ]		begin a new sleep interval"  << std::endl;
-      std::cout << "  e [ end ] 		end and save current sleep interval" << std::endl;
-      std::cout << "  ca [ cancel ]		cancel current sleep interval" << std::endl;
-      std::cout << "  in [ intervals ]	display history of sleep intervals" << std::endl;
-      std::cout << "  fa [ factors ] 	display recorded sleep factors for current day" << std::endl;
-      std::cout << "  q [ quit ]	 	exit Sleep Tracker\n" << std::endl;
+      std::cout << "  w [ window ] [HH:MM]	specify how much time past 24:00 will count as an interval for the previous day" << std::endl;
+      std::cout << "  re [ record ] [OPTIONS]	record productivity/sleep affecting factors for current day" << std::endl;
+      std::cout << "  be [ begin ]		begin a new interval"  << std::endl;
+      std::cout << "  e [ end ] 		end and save current interval" << std::endl;
+      std::cout << "  ca [ cancel ]		cancel current interval" << std::endl;
+      std::cout << "  in [ intervals ]	display history of intervals" << std::endl;
+      std::cout << "  fa [ factors ] 	display recorded factors for current day" << std::endl;
+      std::cout << "  q [ quit ]	 	exit program\n" << std::endl;
       std::cout << "The following options are supported by record command:\n" << std::endl;
       std::cout << "-w, Worked out" << std::endl;
       std::cout << "-d, Drank alcohol" << std::endl;
@@ -170,38 +205,34 @@ int main() {
       std::cout << "-c, Had caffeine\n" << std::endl;
       continue;
     }
-
     //deallocate interval if cancelled
     if (input == "ca" || input == "cancel") {
       if (!seshflag) {
-	std::cout << "No sleep interval to cancel\n" << std::endl;
+	std::cout << "No interval to cancel\n" << std::endl;
 	continue;}
       delete(newsesh);
       seshflag = false;
       std::cout << "interval cancelled\n" << std::endl;
       continue;
     }
-
     //add the new interval with a terminated time
     if (input == "e" || input == "end") {
       if (!seshflag) {
-	std::cout << "No sleep interval to end\n" << std::endl;
+	std::cout << "No interval to end\n" << std::endl;
 	continue;}
       time_t t = time(0);
       newsesh->setTerm(t, propt->getTimeWindow());
       propt->setIntervals(*newsesh);
       delete(newsesh);
       seshflag = false;
-      std::cout << "Session ended\n" << std::endl;
+      std::cout << "Interval ended\n" << std::endl;
       continue;
     }
-
-    //display history of intervals and sleep factors
+    //display history of intervals and factors
     if (input == "in" || input == "intervals") {
       propt->showIntervals();
       continue;
     }
-    
     if (input == "q" || input == "quit") {
       return 0;
     }

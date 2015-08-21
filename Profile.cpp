@@ -25,6 +25,7 @@ Profile::Profile(std::string name, bool newmem) {
     outfile << iv.getDate() << " + " << this->window << "\n";
     outfile << "W:0  D:0  S:0  A:0  C:0" << "\n";
     outfile << "Total Session Time: 0 hours 0 min 0 sec\n";
+    outfile << "\n";
     outfile.close();
   }
 }
@@ -76,6 +77,8 @@ void Profile::setTimeWindow(std::string newwindow) {
     outfile.open(filename, std::ios::app);
     outfile << iv.getDate() << " + " << newwindow << "\n";
     outfile << "W:0  D:0  S:0  A:0  C:0" << "\n";
+    outfile << "Total Session Time: 0 hours 0 min 0 sec\n";
+    outfile << "\n";
     outfile.close();
     return;
   }
@@ -121,6 +124,8 @@ void Profile::setRecord(std::string newargs) {
     outfile.open(filename, std::ofstream::app);
     outfile << iv.getDate() << "\n";
     outfile << "W:0  D:0  S:0  A:0  C:0" << "\n";
+    outfile << "Total Session Time: 0 hours 0 min 0 sec\n";
+    outfile << "\n";
     outfile.close();
   }
   outfile.open("temp.txt", std::ofstream::app);
@@ -234,10 +239,11 @@ void Profile::setIntervals(Interval& interval) {
   infile.close();
   if (!datefound) {
     outfile.open(filename, std::ofstream::app); // will append to very bottom of file
-    outfile << interval.getDate() << "\n";
+    outfile << interval.getDate() << " + " << this->window << "\n";
     outfile << "W:0  D:0  S:0  A:0  C:0" << "\n";
     outfile << interval.getDurationString() << "\n";
     outfile << "Total Session Time: " << interval.getDurationString() << "\n";
+    outfile << "\n";
     outfile.close();
     return;
   } else {
@@ -298,6 +304,7 @@ void Profile::setIntervals(Interval& interval) {
     summin = (summin % 60);
     stringval = "Total Session Time: " + std::to_string(sumhrs) + " hours " + std::to_string(summin) + " min " + std::to_string(sumsec) + " sec";
     outfile << stringval << "\n";
+    outfile << "\n";
     while (getline(infile, line)) { // get rest of history if any is left
       outfile << line << "\n";
     }

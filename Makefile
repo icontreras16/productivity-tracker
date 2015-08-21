@@ -1,4 +1,4 @@
-CC=g++ -Wall
+CC=g++-4.9 -Wall
 
 CFLAGS= -std=c++11 -c
 
